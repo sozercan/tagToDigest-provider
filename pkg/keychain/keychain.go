@@ -36,7 +36,7 @@ var createClientFn = createClient // override for testing
 // Create a multi keychain based in input arguments
 func Create(ctx context.Context, log logr.Logger, config *rest.Config, k8sRef string) (authn.Keychain, error) {
 	if config == nil {
-		log.V(1).Info("creating offline keychain")
+		log.Info("creating offline keychain")
 		return authn.NewMultiKeychain(google.Keychain, authn.DefaultKeychain), nil
 	}
 	client, err := createClientFn(config)
@@ -47,7 +47,7 @@ func Create(ctx context.Context, log logr.Logger, config *rest.Config, k8sRef st
 	if err != nil {
 		return nil, fmt.Errorf("could not create k8schain: %w", err)
 	}
-	log.V(1).Info("creating k8s keychain")
+	log.Info("creating k8s keychain")
 	return authn.NewMultiKeychain(kkc, authn.DefaultKeychain), nil
 }
 

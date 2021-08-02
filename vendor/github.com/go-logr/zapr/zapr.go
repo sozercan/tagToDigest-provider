@@ -69,7 +69,8 @@ import (
 type zapLogger struct {
 	// NB: this looks very similar to zap.SugaredLogger, but
 	// deals with our desire to have multiple verbosity levels.
-	l *zap.Logger
+	l   *zap.Logger
+	lvl zapcore.Level
 }
 
 // handleFields converts a bunch of arbitrary key-value pairs into Zap fields.  It takes
@@ -117,26 +118,12 @@ func handleFields(l *zap.Logger, args []interface{}, additional ...zap.Field) []
 	return append(fields, additional...)
 }
 
-func (zl *zapLogger) Init(ri logr.RuntimeInfo) {
-	zl.l = zl.l.WithOptions(zap.AddCallerSkip(ri.CallDepth))
+func (zl *zapLogger) Enabled() bool {
+	return zl.l.Core().Enabled(zl.lvl)
 }
 
-// Zap levels are int8 - make sure we stay in bounds.  logr itself should
-// ensure we never get negative values.
-func toZapLevel(lvl int) zapcore.Level {
-	if lvl > 127 {
-		lvl = 127
-	}
-	// zap levels are inverted.
-	return 0 - zapcore.Level(lvl)
-}
-
-func (zl zapLogger) Enabled(lvl int) bool {
-	return zl.l.Core().Enabled(toZapLevel(lvl))
-}
-
-func (zl *zapLogger) Info(lvl int, msg string, keysAndVals ...interface{}) {
-	if checkedEntry := zl.l.Check(toZapLevel(lvl), msg); checkedEntry != nil {
+func (zl *zapLogger) Info(msg string, keysAndVals ...interface{}) {
+	if checkedEntry := zl.l.Check(zl.lvl, msg); checkedEntry != nil {
 		checkedEntry.Write(handleFields(zl.l, keysAndVals)...)
 	}
 }
@@ -147,17 +134,24 @@ func (zl *zapLogger) Error(err error, msg string, keysAndVals ...interface{}) {
 	}
 }
 
-func (zl *zapLogger) WithValues(keysAndValues ...interface{}) logr.LogSink {
+func (zl *zapLogger) V(level int) logr.Logger {
+	return &zapLogger{
+		lvl: zl.lvl - zapcore.Level(level),
+		l:   zl.l,
+	}
+}
+
+func (zl *zapLogger) WithValues(keysAndValues ...interface{}) logr.Logger {
 	newLogger := zl.l.With(handleFields(zl.l, keysAndValues)...)
 	return newLoggerWithExtraSkip(newLogger, 0)
 }
 
-func (zl *zapLogger) WithName(name string) logr.LogSink {
+func (zl *zapLogger) WithName(name string) logr.Logger {
 	newLogger := zl.l.Named(name)
 	return newLoggerWithExtraSkip(newLogger, 0)
 }
 
-func (zl *zapLogger) WithCallDepth(depth int) logr.LogSink {
+func (zl *zapLogger) WithCallDepth(depth int) logr.Logger {
 	return newLoggerWithExtraSkip(zl.l, depth)
 }
 
@@ -174,18 +168,19 @@ func (zl *zapLogger) GetUnderlying() *zap.Logger {
 }
 
 // newLoggerWithExtraSkip allows creation of loggers with variable levels of callstack skipping
-func newLoggerWithExtraSkip(l *zap.Logger, callerSkip int) logr.LogSink {
+func newLoggerWithExtraSkip(l *zap.Logger, callerSkip int) logr.Logger {
 	log := l.WithOptions(zap.AddCallerSkip(callerSkip))
 	return &zapLogger{
-		l: log,
+		l:   log,
+		lvl: zap.InfoLevel,
 	}
 }
 
 // NewLogger creates a new logr.Logger using the given Zap Logger to log.
 func NewLogger(l *zap.Logger) logr.Logger {
 	// creates a new logger skipping one level of callstack
-	return logr.New(newLoggerWithExtraSkip(l, 1))
+	return newLoggerWithExtraSkip(l, 1)
 }
 
-var _ logr.LogSink = &zapLogger{}
-var _ logr.CallDepthLogSink = &zapLogger{}
+var _ logr.Logger = &zapLogger{}
+var _ logr.CallDepthLogger = &zapLogger{}

@@ -5,11 +5,13 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
+	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/sozercan/tagToDigest-provider/pkg/keychain"
 	"go.uber.org/zap"
@@ -63,17 +65,25 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1000)
 	defer cancel()
 
-
 	config, err := rest.InClusterConfig()
 	if err != nil {
-		log.Error(err, "unable to get config")
+		log.Error(err, "unable to get in-cluster config")
+		return
 	}
-	kc, err := keychain.Create(ctx, log, config)
 
+	secretKeyRef := os.Getenv("SECRET_NAME")
+	var kc authn.Keychain
+	if secretKeyRef != "" {
+		kc, err = keychain.Create(ctx, log, config, secretKeyRef)
+		if err != nil {
+			log.Error(err, "unable to create keychain")
+			return
+		}
+	}
 
 	for i := range input {
 		if !strings.Contains(i.OutboundData, "sha256") {
-			digest, err := crane.Digest(i.OutboundData)
+			digest, err := crane.Digest(i.OutboundData, crane.WithAuthFromKeychain(kc))
 			if err != nil {
 				log.Error(err, "unable to get digest")
 				return
