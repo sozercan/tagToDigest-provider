@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tagtodigest-provider
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      run: tagtodigest-provider
+  template:
+    metadata:
+      labels:
+        run: tagtodigest-provider
+    spec:
+      containers:
+      - image: sozercan/tagtodigest-provider:latest
+        imagePullPolicy: Always
+        name: tagtodigest-provider
+        ports:
+        - containerPort: 8090
+          protocol: TCP
+      restartPolicy: Always
+      nodeSelector:
+        kubernetes.io/os: linux

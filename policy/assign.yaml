@@ -1,0 +1,21 @@
+apiVersion: mutations.gatekeeper.sh/v1alpha1
+kind: Assign
+metadata:
+  name: mutate-image
+spec:
+  match:
+    scope: Namespaced
+    kinds:
+    - apiGroups: ["apps"]
+      kinds: ["Deployment"]
+  applyTo:
+  - groups: ["apps"]
+    kinds: ["Deployment"]
+    versions: ["v1"]
+  location: "spec.template.spec.containers[name:*].image"
+  parameters:
+    externalData:
+      provider: tagtodigest-provider
+      dataSource: valueAtLocation
+    assign:
+      value: test # failure case
