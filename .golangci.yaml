@@ -1,0 +1,39 @@
+run:
+  timeout: 5m
+
+linters-settings:
+  gocritic:
+    enabled-tags:
+    - performance
+  gosec:
+    excludes:
+    - G108
+  lll:
+    line-length: 200
+
+  misspell:
+    locale: US
+  staticcheck:
+    # Select the Go version to target. The default is '1.13'.
+    go: "1.16"
+
+linters:
+  disable-all: true
+  enable:
+    - deadcode
+    - errcheck
+    - ineffassign
+    - gocritic
+    - goconst
+    - gofmt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - misspell
+    - revive
+    - staticcheck
+    - structcheck
+    - typecheck
+    - unused
+    - varcheck

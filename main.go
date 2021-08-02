@@ -19,14 +19,14 @@ type ProviderCacheKey struct {
 	OutboundData string `json:"outboundData,omitempty"`
 }
 
-func (k ProviderCacheKey) MarshalText() ([]byte, error) {
+func (k *ProviderCacheKey) MarshalText() ([]byte, error) {
 	type p ProviderCacheKey
-	return json.Marshal(p(k))
+	return json.Marshal(p(*k))
 }
 
-func (s *ProviderCacheKey) UnmarshalText(text []byte) error {
+func (k *ProviderCacheKey) UnmarshalText(text []byte) error {
 	type x ProviderCacheKey
-	return json.Unmarshal(text, (*x)(s))
+	return json.Unmarshal(text, (*x)(k))
 }
 
 func main() {
@@ -53,6 +53,7 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(&input)
 	if err != nil {
 		log.Error(err, "unable to read request body")
+		return
 	}
 
 	for i := range input {
@@ -60,6 +61,7 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 			digest, err := crane.Digest(i.OutboundData)
 			if err != nil {
 				log.Error(err, "unable to get digest")
+				return
 			}
 			input[i] = i.OutboundData + "@" + digest
 		} else {
@@ -69,11 +71,12 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 
 	out, err := json.Marshal(input)
 	if err != nil {
-		panic(err)
+		log.Error(err, "unable to marshal to output")
+		return
 	}
 
 	log.Info("mutate", "response", out)
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, string(out))
+	fmt.Fprint(w, string(out))
 }
