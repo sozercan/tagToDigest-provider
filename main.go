@@ -25,9 +25,9 @@ type ProviderCacheKey struct {
 	OutboundData string `json:"outboundData,omitempty"`
 }
 
-func (k *ProviderCacheKey) MarshalText() ([]byte, error) {
+func (k ProviderCacheKey) MarshalText() ([]byte, error) {
 	type p ProviderCacheKey
-	return json.Marshal(p(*k))
+	return json.Marshal(p(k))
 }
 
 func (k *ProviderCacheKey) UnmarshalText(text []byte) error {
