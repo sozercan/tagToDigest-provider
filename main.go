@@ -86,9 +86,10 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 			digest, err := crane.Digest(i.OutboundData, crane.WithAuthFromKeychain(kc))
 			if err != nil {
 				log.Error(err, "unable to get digest")
-				return
+				input[i] = i.OutboundData
+			} else {
+				input[i] = i.OutboundData + "@" + digest
 			}
-			input[i] = i.OutboundData + "@" + digest
 		} else {
 			input[i] = i.OutboundData
 		}

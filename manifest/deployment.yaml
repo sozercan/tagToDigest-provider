@@ -22,3 +22,4 @@ spec:
       restartPolicy: Always
       nodeSelector:
         kubernetes.io/os: linux
+      serviceAccountName: provider-tagtodigest-sa

@@ -64,6 +64,7 @@ func createK8schain(ctx context.Context, log logr.Logger, client kubernetes.Inte
 	log.Info("creating k8schain", "namespace", namespace, "imagePullSecrets", secretName)
 	return k8schain.New(ctx, client, k8schain.Options{
 		Namespace:          namespace,
+		ServiceAccountName: "provider-tagtodigest-sa",
 		ImagePullSecrets:   []string{secretName},
 	})
 }
