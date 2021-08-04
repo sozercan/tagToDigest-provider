@@ -20,5 +20,3 @@ jobs:
 
     - name: Lint
       run: make lint
-
-
