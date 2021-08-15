@@ -13,7 +13,7 @@ spec:
         run: tagtodigest-provider
     spec:
       containers:
-      - image: sozercan/tagtodigest-provider:latest
+      - image: sozercan/tagtodigest-provider:v0.0.1
         imagePullPolicy: Always
         name: tagtodigest-provider
         ports:
