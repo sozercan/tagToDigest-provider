@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -11,6 +10,7 @@ import (
 
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zapr"
+	"github.com/goccy/go-json"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
 	"github.com/sozercan/tagToDigest-provider/pkg/keychain"
@@ -19,6 +19,8 @@ import (
 )
 
 var log logr.Logger
+
+const timeout = 3 * time.Second
 
 type ProviderCacheKey struct {
 	ProviderName string `json:"providerName,omitempty"`
@@ -62,7 +64,7 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1000)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
 	config, err := rest.InClusterConfig()

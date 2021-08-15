@@ -6,7 +6,7 @@ metadata:
   labels:
     app: test-deployment
 spec:
-  replicas: 0
+  replicas: 0 # testing purposes only
   selector:
     matchLabels:
       app: test-deployment
@@ -16,7 +16,7 @@ spec:
         app: test-deployment
     spec:
       containers:
-      - name: tag
+      - name: tag # should mutate to digest
         image: gcr.io/distroless/static:nonroot
-      - name: digest
+      - name: digest # already includes digest, should not mutate
         image: gcr.io/distroless/static:nonroot@sha256:c9f9b040044cc23e1088772814532d90adadfa1b86dcba17d07cb567db18dc4e"
