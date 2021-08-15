@@ -20,7 +20,10 @@ import (
 
 var log logr.Logger
 
-const timeout = 3 * time.Second
+const (
+	timeout      = 3 * time.Second
+	providerName = "tagtodigest-provider"
+)
 
 type ProviderCacheKey struct {
 	ProviderName string `json:"providerName,omitempty"`
@@ -84,7 +87,7 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 	}
 
 	for i := range input {
-		if !strings.Contains(i.OutboundData, "sha256") {
+		if i.ProviderName == providerName && !strings.Contains(i.OutboundData, "sha256") {
 			digest, err := crane.Digest(i.OutboundData, crane.WithAuthFromKeychain(kc))
 			if err != nil {
 				log.Error(err, "unable to get digest")
