@@ -3,7 +3,5 @@ kind: Provider
 metadata:
   name: tagtodigest-provider
 spec:
-  proxyURL: http://tagtodigest-provider.default:8090/mutate
+  url: http://tagtodigest-provider.default:8090/mutate
   timeout: 3
-  failurePolicy: Fail
-  maxRetry: 1
