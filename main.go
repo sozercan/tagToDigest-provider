@@ -23,10 +23,9 @@ import (
 var log logr.Logger
 
 const (
-	timeout      = 3 * time.Second
-	providerName = "tagtodigest-provider"
-	apiVersion   = "externaldata.gatekeeper.sh/v1alpha1"
-	kind         = "ProviderResponse"
+	timeout    = 3 * time.Second
+	apiVersion = "externaldata.gatekeeper.sh/v1alpha1"
+	kind       = "ProviderResponse"
 )
 
 func main() {
