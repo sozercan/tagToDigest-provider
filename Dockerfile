@@ -1,8 +1,7 @@
-ARG BUILDPLATFORM="linux/amd64"
-ARG BUILDERIMAGE="golang:1.16"
-ARG BASEIMAGE="gcr.io/distroless/static:nonroot-amd64"
+ARG BUILDERIMAGE="golang:1.17"
+ARG BASEIMAGE="gcr.io/distroless/static:nonroot"
 
-FROM --platform=$BUILDPLATFORM $BUILDERIMAGE as builder
+FROM $BUILDERIMAGE as builder
 
 ARG TARGETPLATFORM
 ARG TARGETOS
@@ -20,7 +19,7 @@ WORKDIR /go/src/github.com/sozercan/tagToDigest-provider
 
 COPY . .
 
-RUN go build -mod vendor -o provider main.go
+RUN go build -o provider main.go
 
 FROM $BASEIMAGE
 

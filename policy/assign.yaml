@@ -1,4 +1,4 @@
-apiVersion: mutations.gatekeeper.sh/v1alpha1
+apiVersion: mutations.gatekeeper.sh/v1beta1
 kind: Assign
 metadata:
   name: mutate-image
@@ -14,8 +14,6 @@ spec:
     versions: ["v1"]
   location: "spec.template.spec.containers[name:*].image"
   parameters:
-    externalData:
-      provider: tagtodigest-provider
-      dataSource: valueAtLocation
     assign:
-      value: test # failure case
+      externalData:
+        provider: tagtodigest-provider

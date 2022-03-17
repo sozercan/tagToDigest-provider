@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"github.com/goccy/go-json"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/crane"
+	"github.com/open-policy-agent/frameworks/constraint/pkg/externaldata"
 	"github.com/sozercan/tagToDigest-provider/pkg/keychain"
 	"go.uber.org/zap"
 	"k8s.io/client-go/rest"
@@ -21,24 +23,10 @@ import (
 var log logr.Logger
 
 const (
-	timeout      = 3 * time.Second
-	providerName = "tagtodigest-provider"
+	timeout    = 1 * time.Second
+	apiVersion = "externaldata.gatekeeper.sh/v1alpha1"
+	kind       = "ProviderResponse"
 )
-
-type ProviderCacheKey struct {
-	ProviderName string `json:"providerName,omitempty"`
-	OutboundData string `json:"outboundData,omitempty"`
-}
-
-func (k ProviderCacheKey) MarshalText() ([]byte, error) {
-	type p ProviderCacheKey
-	return json.Marshal(p(k))
-}
-
-func (k *ProviderCacheKey) UnmarshalText(text []byte) error {
-	type x ProviderCacheKey
-	return json.Unmarshal(text, (*x)(k))
-}
 
 func main() {
 	zapLog, err := zap.NewDevelopment()
@@ -57,13 +45,24 @@ func main() {
 }
 
 func mutate(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("Content-Type", "application/json")
+	// only accept POST requests
+	if req.Method != http.MethodPost {
+		sendResponse(nil, "only POST is allowed", w)
+		return
+	}
 
-	var input map[ProviderCacheKey]string
-
-	err := json.NewDecoder(req.Body).Decode(&input)
+	// read request body
+	requestBody, err := ioutil.ReadAll(req.Body)
 	if err != nil {
-		log.Error(err, "unable to read request body")
+		sendResponse(nil, fmt.Sprintf("unable to read request body: %v", err), w)
+		return
+	}
+
+	// parse request body
+	var providerRequest externaldata.ProviderRequest
+	err = json.Unmarshal(requestBody, &providerRequest)
+	if err != nil {
+		sendResponse(nil, fmt.Sprintf("unable to unmarshal request body: %v", err), w)
 		return
 	}
 
@@ -86,28 +85,46 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 		}
 	}
 
-	for i := range input {
-		if i.ProviderName == providerName && !strings.Contains(i.OutboundData, "sha256") {
-			digest, err := crane.Digest(i.OutboundData, crane.WithAuthFromKeychain(kc))
+	results := make([]externaldata.Item, 0)
+	for _, image := range providerRequest.Request.Keys {
+		item := externaldata.Item{
+			Key:   image,
+			Value: image,
+		}
+		if !strings.Contains(image, "@sha256") {
+			digest, err := crane.Digest(image, crane.WithAuthFromKeychain(kc))
 			if err != nil {
 				log.Error(err, "unable to get digest")
-				input[i] = i.OutboundData
-			} else {
-				input[i] = i.OutboundData + "@" + digest
+				item.Error = err.Error()
 			}
-		} else {
-			input[i] = i.OutboundData
+			item.Value = fmt.Sprintf("%s@%s", image, digest)
 		}
+		results = append(results, item)
 	}
 
-	out, err := json.Marshal(input)
-	if err != nil {
-		log.Error(err, "unable to marshal to output")
-		return
+	sendResponse(&results, "", w)
+}
+
+// sendResponse sends back the response to Gatekeeper.
+func sendResponse(results *[]externaldata.Item, systemErr string, w http.ResponseWriter) {
+	response := externaldata.ProviderResponse{
+		APIVersion: apiVersion,
+		Kind:       kind,
+		Response: externaldata.Response{
+			Idempotent: true,
+		},
 	}
 
-	log.Info("mutate", "response", out)
+	if results != nil {
+		response.Response.Items = *results
+	} else {
+		response.Response.SystemError = systemErr
+	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, string(out))
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		panic(err)
+	}
+
+	log.Info("mutate", "response", response)
 }
