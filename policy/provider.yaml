@@ -4,4 +4,4 @@ metadata:
   name: tagtodigest-provider
 spec:
   url: http://tagtodigest-provider.default:8090/mutate
-  timeout: 3
+  timeout: 1

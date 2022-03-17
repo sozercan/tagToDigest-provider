@@ -23,7 +23,7 @@ import (
 var log logr.Logger
 
 const (
-	timeout    = 3 * time.Second
+	timeout    = 1 * time.Second
 	apiVersion = "externaldata.gatekeeper.sh/v1alpha1"
 	kind       = "ProviderResponse"
 )
