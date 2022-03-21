@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-logr/logr"
@@ -37,14 +38,17 @@ func main() {
 	log.WithName("tagToDigest-provider")
 
 	log.Info("starting server...")
-	http.HandleFunc("/mutate", mutate)
+	http.HandleFunc("/mutate", processTimeout(mutate, timeout))
 
 	if err = http.ListenAndServe(":8090", nil); err != nil {
 		panic(err)
 	}
 }
 
+// mutate is a http handler that converts a list of tags to digests.
 func mutate(w http.ResponseWriter, req *http.Request) {
+	begin := time.Now()
+
 	// only accept POST requests
 	if req.Method != http.MethodPost {
 		sendResponse(nil, "only POST is allowed", w)
@@ -86,23 +90,35 @@ func mutate(w http.ResponseWriter, req *http.Request) {
 	}
 
 	results := make([]externaldata.Item, 0)
+	var wg sync.WaitGroup
+	var mutex sync.RWMutex
 	for _, image := range providerRequest.Request.Keys {
-		item := externaldata.Item{
-			Key:   image,
-			Value: image,
-		}
-		if !strings.Contains(image, "@sha256") {
-			digest, err := crane.Digest(image, crane.WithAuthFromKeychain(kc))
-			if err != nil {
-				log.Error(err, "unable to get digest")
-				item.Error = err.Error()
+		wg.Add(1)
+
+		go func(image string) {
+			defer wg.Done()
+			item := externaldata.Item{
+				Key:   image,
+				Value: image,
 			}
-			item.Value = fmt.Sprintf("%s@%s", image, digest)
-		}
-		results = append(results, item)
+			if !strings.Contains(image, "@sha256") {
+				digest, err := crane.Digest(image, crane.WithAuthFromKeychain(kc))
+				if err != nil {
+					log.Error(err, "unable to get digest")
+					item.Error = err.Error()
+				}
+				item.Value = fmt.Sprintf("%s@%s", image, digest)
+			}
+
+			mutex.Lock()
+			defer mutex.Unlock()
+			results = append(results, item)
+		}(image)
 	}
+	wg.Wait()
 
 	sendResponse(&results, "", w)
+	log.Info("mutate", "elapsed", time.Since(begin))
 }
 
 // sendResponse sends back the response to Gatekeeper.
@@ -127,4 +143,26 @@ func sendResponse(results *[]externaldata.Item, systemErr string, w http.Respons
 	}
 
 	log.Info("mutate", "response", response)
+}
+
+// processTimeout wraps a http handler with a timeout.
+func processTimeout(h http.HandlerFunc, duration time.Duration) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(r.Context(), duration)
+		defer cancel()
+
+		r = r.WithContext(ctx)
+
+		processDone := make(chan bool)
+		go func() {
+			h(w, r)
+			processDone <- true
+		}()
+
+		select {
+		case <-ctx.Done():
+			sendResponse(nil, "operation timed out", w)
+		case <-processDone:
+		}
+	}
 }

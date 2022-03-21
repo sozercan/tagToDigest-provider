@@ -16,9 +16,23 @@ spec:
         app: test-deployment
     spec:
       containers:
-      - name: tag # should mutate to digest
+      - name: distroless # should mutate to digest
         image: gcr.io/distroless/static:nonroot
-      - name: digest # already includes digest, should not mutate
+      - name: distroless-with-sha # already includes digest, should not mutate
         image: gcr.io/distroless/static:nonroot@sha256:c9f9b040044cc23e1088772814532d90adadfa1b86dcba17d07cb567db18dc4e
-      - name: dockerhub-latest
+      - name: busybox
         image: busybox
+      - name: nginx
+        image: nginx:1.21.6
+      - name: node-exporter
+        image: quay.io/prometheus/node-exporter:v1.3.1
+      - name: pause
+        image: mcr.microsoft.com/oss/kubernetes/pause:3.6-hotfix.20220114
+      - name: acr
+        image: upstream.azurecr.io/oss/kubernetes/pause:3.6-hotfix.20220114
+      - name: ecr
+        image: public.ecr.aws/datadog/agent:latest
+      - name: amazon-linux
+        image: public.ecr.aws/amazonlinux/amazonlinux:latest
+      - name: redis
+        image: mcr.microsoft.com/oss/bitnami/redis:6.0.8.9
