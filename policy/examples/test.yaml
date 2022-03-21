@@ -27,12 +27,12 @@ spec:
       - name: node-exporter
         image: quay.io/prometheus/node-exporter:v1.3.1
       - name: pause
-        image: mcr.microsoft.com/oss/kubernetes/pause:3.6-hotfix.20220114
+        image: mcr.microsoft.com/oss/kubernetes/pause:3.6
       - name: acr
-        image: upstream.azurecr.io/oss/kubernetes/pause:3.6-hotfix.20220114
+        image: upstream.azurecr.io/oss/kubernetes/pause:3.6
       - name: ecr
         image: public.ecr.aws/datadog/agent:latest
       - name: amazon-linux
         image: public.ecr.aws/amazonlinux/amazonlinux:latest
       - name: redis
-        image: mcr.microsoft.com/oss/bitnami/redis:6.0.8.9
+        image: mcr.microsoft.com/oss/bitnami/redis:6.0.8
