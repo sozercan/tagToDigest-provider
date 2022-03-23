@@ -1,4 +1,4 @@
-REPOSITORY ?= tagtodigest-provider
+REPOSITORY ?= sozercan/tagtodigest-provider
 IMG := $(REPOSITORY):latest
 ARCH ?= "linux/amd64"
 

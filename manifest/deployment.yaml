@@ -19,7 +19,7 @@ spec:
         run: tagtodigest-provider
     spec:
       containers:
-      - image: tagtodigest-provider:latest
+      - image: sozercan/tagtodigest-provider:v0.0.1
         imagePullPolicy: IfNotPresent
         name: tagtodigest-provider
         ports:
