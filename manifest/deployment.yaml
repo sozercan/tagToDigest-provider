@@ -1,7 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-data-providers
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: tagtodigest-provider
+  namespace: external-data-providers
 spec:
   replicas: 1
   selector:
@@ -14,7 +20,7 @@ spec:
     spec:
       containers:
       - image: sozercan/tagtodigest-provider:v0.0.1
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         name: tagtodigest-provider
         ports:
         - containerPort: 8090
