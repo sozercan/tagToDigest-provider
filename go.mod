@@ -9,7 +9,7 @@ require (
 	github.com/google/go-containerregistry v0.6.0
 	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20210730184846-a65a0a616b77
 	github.com/open-policy-agent/frameworks/constraint v0.0.0-20220218180203-c2a0d8cdf85a
-	go.uber.org/zap v1.19.1
+	go.uber.org/zap v1.21.0
 	k8s.io/client-go v0.23.3
 )
 
