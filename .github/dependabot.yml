@@ -5,8 +5,17 @@ updates:
   schedule:
     interval: daily
   open-pull-requests-limit: 10
+  commit-message:
+    prefix: "chore"
+  ignore:
+  - dependency-name: "*"
+    update-types:
+    - "version-update:semver-major"
+    - "version-update:semver-minor"
 - package-ecosystem: "github-actions"
   directory: "/"
   schedule:
       interval: "daily"
   open-pull-requests-limit: 10
+  commit-message:
+    prefix: "chore"
