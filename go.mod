@@ -4,7 +4,7 @@ go 1.17
 
 require (
 	github.com/go-logr/logr v1.2.3
-	github.com/go-logr/zapr v1.2.0
+	github.com/go-logr/zapr v1.2.3
 	github.com/goccy/go-json v0.7.10
 	github.com/google/go-containerregistry v0.6.1
 	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20210730184846-a65a0a616b77
