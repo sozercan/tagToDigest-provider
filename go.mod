@@ -10,7 +10,7 @@ require (
 	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20210730184846-a65a0a616b77
 	github.com/open-policy-agent/frameworks/constraint v0.0.0-20220627162905-95c012350402
 	go.uber.org/zap v1.19.1
-	k8s.io/client-go v0.24.2
+	k8s.io/client-go v0.24.3
 )
 
 require (
@@ -80,8 +80,8 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.0 // indirect
-	k8s.io/api v0.24.2 // indirect
-	k8s.io/apimachinery v0.24.2 // indirect
+	k8s.io/api v0.24.3 // indirect
+	k8s.io/apimachinery v0.24.3 // indirect
 	k8s.io/cloud-provider v0.21.0 // indirect
 	k8s.io/component-base v0.24.2 // indirect
 	k8s.io/klog/v2 v2.60.1 // indirect
