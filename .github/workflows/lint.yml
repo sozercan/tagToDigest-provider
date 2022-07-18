@@ -20,6 +20,6 @@ jobs:
     - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v2.4.0
     
     - name: golangci-lint
-      uses: golangci/golangci-lint-action@5513777940af9e5573de6cb9d95bbe6f2a7d2d5a # v3.2.0
+      uses: golangci/golangci-lint-action@88a61333be06e8e8a337eddec74ec6e6e1937202 # v3.2.0
       with:
         version: latest
