@@ -10,7 +10,7 @@ require (
 	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20210730184846-a65a0a616b77
 	github.com/open-policy-agent/frameworks/constraint v0.0.0-20220719222628-b0dbc52e8449
 	go.uber.org/zap v1.19.1
-	k8s.io/client-go v0.24.3
+	k8s.io/client-go v0.24.4
 )
 
 require (
@@ -35,7 +35,6 @@ require (
 	github.com/docker/docker v20.10.17+incompatible // indirect
 	github.com/docker/docker-credential-helpers v0.6.4 // indirect
 	github.com/emicklei/go-restful v2.9.5+incompatible // indirect
-	github.com/form3tech-oss/jwt-go v3.2.3+incompatible // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/go-openapi/jsonpointer v0.19.5 // indirect
 	github.com/go-openapi/jsonreference v0.19.6 // indirect
@@ -46,7 +45,6 @@ require (
 	github.com/google/gnostic v0.5.7-v3refs // indirect
 	github.com/google/go-cmp v0.5.8 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
-	github.com/googleapis/gnostic v0.5.5 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -80,8 +78,8 @@ require (
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
-	k8s.io/api v0.24.3 // indirect
-	k8s.io/apimachinery v0.24.3 // indirect
+	k8s.io/api v0.24.4 // indirect
+	k8s.io/apimachinery v0.24.4 // indirect
 	k8s.io/cloud-provider v0.21.0 // indirect
 	k8s.io/component-base v0.24.2 // indirect
 	k8s.io/klog/v2 v2.60.1 // indirect
