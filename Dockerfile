@@ -1,4 +1,4 @@
-ARG BUILDERIMAGE="golang:1.18"
+ARG BUILDERIMAGE="golang:1.19"
 ARG BASEIMAGE="gcr.io/distroless/static:nonroot"
 
 FROM $BUILDERIMAGE as builder
