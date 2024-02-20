@@ -9,7 +9,7 @@ require (
 	github.com/google/go-containerregistry v0.6.1
 	github.com/google/go-containerregistry/pkg/authn/k8schain v0.0.0-20210730184846-a65a0a616b77
 	github.com/open-policy-agent/frameworks/constraint v0.0.0-20220719222628-b0dbc52e8449
-	go.uber.org/zap v1.19.1
+	go.uber.org/zap v1.27.0
 	k8s.io/client-go v0.24.4
 )
 
@@ -64,7 +64,7 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
-	go.uber.org/multierr v1.6.0 // indirect
+	go.uber.org/multierr v1.10.0 // indirect
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/net v0.0.0-20220401154927-543a649e0bdd // indirect
 	golang.org/x/oauth2 v0.0.0-20220309155454-6242fa91716a // indirect
