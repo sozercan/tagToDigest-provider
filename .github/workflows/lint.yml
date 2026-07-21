@@ -17,7 +17,7 @@ jobs:
       with:
         egress-policy: audit
 
-    - uses: actions/checkout@2541b1294d2704b0964813337f33b291d3f8596b # v2.4.0
+    - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
     
     - name: golangci-lint
       uses: golangci/golangci-lint-action@537aa1903e5d359d0b27dbc19ddd22c5087f3fbc # v3.2.0
